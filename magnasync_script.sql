@@ -99,3 +99,39 @@ leitura_id INT NOT NULL,
 CONSTRAINT fk_alerta_leitura1
 	FOREIGN KEY (leitura_id) REFERENCES leitura (id)
 );
+
+CREATE TABLE registros (
+id_registro INT PRIMARY KEY AUTO_INCREMENT,
+id_equipamento INT NOT NULL,
+cpu_percentual DECIMAL(5,2),
+cpu_frequencia DECIMAL(10,2),
+cpu_nucleos INT,
+cpu_status VARCHAR(10),
+ram_percentual DECIMAL(5,2),
+ram_total DECIMAL(10,2),
+ram_disponivel DECIMAL(10,2),
+ram_status VARCHAR(10),
+disco_percentual DECIMAL(5,2),
+disco_total DECIMAL(10,2),
+disco_disponivel DECIMAL(10,2),
+disco_status VARCHAR(10),
+download_mb DECIMAL(12,1),
+upload_mb DECIMAL(12,1),
+status_geral VARCHAR(10),
+data_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_registros_equipamento FOREIGN KEY (id_equipamento)
+        REFERENCES equipamento(id)
+);
+
+-- Define o hospital
+
+INSERT INTO hospital (nome, cnpj, telefone, email, cep, numero)
+VALUES ('Hospital_MagnaSync', '00000000000000', '1100000000', 'magnasync@hospital.com', '00000000', '100');
+
+-- Maquina do hospital que esta sendo monitorado
+
+INSERT INTO equipamento (fabricante, mac_address, modelo, hospital_id)
+VALUES ('Maquina Console Sala A', '00:00:00:00:00:01', 'Ressonância Magnética', 1),
+       ('Maquina Consol Sala B', '00:00:00:00:00:02', 'Ressonância Magnética', 1);
+       
+Select * from registros;
