@@ -14,14 +14,12 @@ numero VARCHAR(10) NOT NULL
 CREATE TABLE equipamento (
 id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 fabricante VARCHAR(60) NULL,
-mac_address CHAR(17) NULL,
-modelo VARCHAR(60) NULL,
-numero_serie VARCHAR(60) NULL,
-ano_fabricacao YEAR NULL,
-ip_address VARCHAR(45) NULL,
-dicom_ae_title VARCHAR(16) NULL,
-tipo_chiller VARCHAR(50) NULL,
-dicom_port INT NULL,
+mac_adress CHAR(17) NOT NULL,
+nucleos_fisicos INT NOT NULL,
+nucleos_logicos INT NOT NULL,
+fequencia_maxima FLOAT NOT NULL,
+memoria_total BIGINT NOT NULL,
+capacidade_total BIGINT NOT NULL,
 hospital_id INT NOT NULL,
 CONSTRAINT fk_equipamento_hospital
 	FOREIGN KEY (hospital_id) REFERENCES hospital (id)
@@ -124,14 +122,14 @@ data_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 );
 
 -- Define o hospital
-
 INSERT INTO hospital (nome, cnpj, telefone, email, cep, numero)
-VALUES ('Hospital_MagnaSync', '00000000000000', '1100000000', 'magnasync@hospital.com', '00000000', '100');
+VALUES 
+('Hospital_MagnaSync', '00000000000000', '1100000000', 'magnasync@hospital.com', '00000000', '100');
 
--- Maquina do hospital que esta sendo monitorado
-
-INSERT INTO equipamento (fabricante, mac_address, modelo, hospital_id)
-VALUES ('Maquina Console Sala A', '00:00:00:00:00:01', 'Ressonância Magnética', 1),
-       ('Maquina Consol Sala B', '00:00:00:00:00:02', 'Ressonância Magnética', 1);
-       
-Select * from registros;
+-- Inserindo os componentes que serão monitorados
+INSERT INTO componente (nome) 
+VALUES 
+('CPU'),
+('RAM'),
+('Disco'),
+('Rede');
