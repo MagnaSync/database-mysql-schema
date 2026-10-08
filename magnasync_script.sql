@@ -2,7 +2,7 @@ CREATE DATABASE magnasync;
 USE magnasync;
 
 CREATE TABLE hospital (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(150) NOT NULL,
     cnpj CHAR(14) NOT NULL,
     telefone VARCHAR(20) NOT NULL,
@@ -12,12 +12,12 @@ CREATE TABLE hospital (
 );
 
 CREATE TABLE cargo (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    iid INT PRIMARY KEY AUTO_INCREMENT,
     funcao VARCHAR(60) NOT NULL
 );
 
 CREATE TABLE funcionario (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     senha VARCHAR(100) NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE funcionario (
 );
 
 CREATE TABLE equipamento (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    iid INT PRIMARY KEY AUTO_INCREMENT,
     fabricante VARCHAR(60) NULL,
     mac_adress CHAR(17) NOT NULL,
     nucleos_fisicos INT NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE equipamento (
 );
 
 CREATE TABLE status_equipamento (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     data_hora DATETIME NOT NULL,
     classificacao_status_id INT NOT NULL,
     equipamento_id INT NOT NULL,
@@ -48,12 +48,12 @@ CREATE TABLE status_equipamento (
 );
 
 CREATE TABLE unidade (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     medida VARCHAR(45) NOT NULL
 );
 
 CREATE TABLE componente (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     tipo VARCHAR(45) NOT NULL,
     biblioteca VARCHAR(45) NOT NULL,
     comando VARCHAR(45) NOT NULL,
@@ -62,16 +62,17 @@ CREATE TABLE componente (
 );
 
 CREATE TABLE parametro (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id INT,
     fkEquipamento INT NOT NULL,
     fkComponente INT NOT NULL,
     metrica INT NOT NULL,
+    PRIMARY KEY (id, fkEquipamento, fkComponente),
     CONSTRAINT fk_parametro_equipamento FOREIGN KEY (fkEquipamento) REFERENCES equipamento (id),
     CONSTRAINT fk_parametro_componente FOREIGN KEY (fkComponente) REFERENCES componente (id)
 );
 
 CREATE TABLE leitura (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     fkEquipamento INT NOT NULL,
     fkComponente INT NOT NULL,
     fkMetrica INT NOT NULL,
@@ -81,12 +82,12 @@ CREATE TABLE leitura (
 );
 
 CREATE TABLE categoria_alerta (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     classificacao VARCHAR(45) NOT NULL
 );
 
 CREATE TABLE alerta (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     data_hora DATETIME NOT NULL,
     leitura_id INT NOT NULL,
     categoria_alerta_id INT NOT NULL,
