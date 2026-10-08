@@ -2,134 +2,119 @@ CREATE DATABASE magnasync;
 USE magnasync;
 
 CREATE TABLE hospital (
-id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-nome VARCHAR(150) NOT NULL,
-cnpj CHAR(14) NOT NULL,
-telefone VARCHAR(20) NOT NULL,
-email VARCHAR(150) NOT NULL,
-cep CHAR(8) NOT NULL,
-numero VARCHAR(10) NOT NULL
-);
-
-CREATE TABLE equipamento (
-id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-fabricante VARCHAR(60) NULL,
-mac_adress CHAR(17) NOT NULL,
-nucleos_fisicos INT NOT NULL,
-nucleos_logicos INT NOT NULL,
-fequencia_maxima FLOAT NOT NULL,
-memoria_total BIGINT NOT NULL,
-capacidade_total BIGINT NOT NULL,
-hospital_id INT NOT NULL,
-CONSTRAINT fk_equipamento_hospital
-	FOREIGN KEY (hospital_id) REFERENCES hospital (id)
-);
-
-CREATE TABLE manutencao (
-id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-data_ultima_preventiva DATE NOT NULL,
-data_proxima_preventiva DATE NOT NULL
-);
-
-CREATE TABLE status_equipamento (
-id INT NOT NULL AUTO_INCREMENT,
-status_equipamento VARCHAR(45) NOT NULL,
-data_hora DATETIME NOT NULL,
-equipamento_id INT NOT NULL,
-manutencao_id INT NOT NULL,
-PRIMARY KEY (id, equipamento_id, manutencao_id),
-CONSTRAINT fk_status_equipamento
-	FOREIGN KEY (equipamento_id) REFERENCES equipamento (id),
-CONSTRAINT fk_status_manutencao
-	FOREIGN KEY (manutencao_id) REFERENCES manutencao (id)
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    cnpj CHAR(14) NOT NULL,
+    telefone VARCHAR(20) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    cep CHAR(8) NOT NULL,
+    numero VARCHAR(10) NOT NULL
 );
 
 CREATE TABLE cargo (
-id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-cargo VARCHAR(60) NOT NULL
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    funcao VARCHAR(60) NOT NULL
 );
 
 CREATE TABLE funcionario (
-id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-nome VARCHAR(100) NOT NULL,
-email VARCHAR(100) NOT NULL,
-senha VARCHAR(100) NOT NULL,
-hospital_id INT NOT NULL,
-cargo_id INT NOT NULL,
-CONSTRAINT fk_funcionario_hospital
-	FOREIGN KEY (hospital_id) REFERENCES hospital (id),
-CONSTRAINT fk_funcionario_cargo
-	FOREIGN KEY (cargo_id) REFERENCES cargo (id)
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    senha VARCHAR(100) NOT NULL,
+    hospital_id INT NOT NULL,
+    cargo_id INT NOT NULL,
+    CONSTRAINT fk_funcionario_hospital FOREIGN KEY (hospital_id) REFERENCES hospital (id),
+    CONSTRAINT fk_funcionario_cargo FOREIGN KEY (cargo_id) REFERENCES cargo (id)
+);
+
+CREATE TABLE equipamento (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    fabricante VARCHAR(60) NULL,
+    mac_adress CHAR(17) NOT NULL,
+    nucleos_fisicos INT NOT NULL,
+    nucleos_logicos INT NOT NULL,
+    frequencia_maxima FLOAT NOT NULL,
+    memoria_total VARCHAR(45) NOT NULL,
+    hospital_id INT NOT NULL,
+    CONSTRAINT fk_equipamento_hospital FOREIGN KEY (hospital_id) REFERENCES hospital (id)
+);
+
+CREATE TABLE status_equipamento (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    data_hora DATETIME NOT NULL,
+    classificacao_status_id INT NOT NULL,
+    equipamento_id INT NOT NULL,
+    CONSTRAINT fk_status_equipamento FOREIGN KEY (equipamento_id) REFERENCES equipamento (id)
+);
+
+CREATE TABLE unidade (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    medida VARCHAR(45) NOT NULL
 );
 
 CREATE TABLE componente (
-id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-nome VARCHAR(45) NOT NULL
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    tipo VARCHAR(45) NOT NULL,
+    biblioteca VARCHAR(45) NOT NULL,
+    comando VARCHAR(45) NOT NULL,
+    fkUnidade INT NOT NULL,
+    CONSTRAINT fk_componente_unidade FOREIGN KEY (fkUnidade) REFERENCES unidade (id)
 );
 
-CREATE TABLE metricas (
-id INT NOT NULL AUTO_INCREMENT,
-comando VARCHAR(255) NOT NULL,
-tipo VARCHAR(45) NOT NULL,
-equipamento_id INT NOT NULL,
-componente_id INT NOT NULL,
-PRIMARY KEY (id, equipamento_id, componente_id),
-CONSTRAINT fk_metricas_equipamento1
-	FOREIGN KEY (equipamento_id) REFERENCES equipamento (id),
-CONSTRAINT fk_metricas_componente1
-	FOREIGN KEY (componente_id) REFERENCES componente (id)
+CREATE TABLE parametro (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    fkEquipamento INT NOT NULL,
+    fkComponente INT NOT NULL,
+    metrica INT NOT NULL,
+    CONSTRAINT fk_parametro_equipamento FOREIGN KEY (fkEquipamento) REFERENCES equipamento (id),
+    CONSTRAINT fk_parametro_componente FOREIGN KEY (fkComponente) REFERENCES componente (id)
 );
 
 CREATE TABLE leitura (
-id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-valor DOUBLE NOT NULL,
-data_hora DATETIME NOT NULL,
-metricas_id INT NOT NULL,
-CONSTRAINT fk_leitura_metricas1
-	FOREIGN KEY (metricas_id) REFERENCES metricas (id)
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    fkEquipamento INT NOT NULL,
+    fkComponente INT NOT NULL,
+    fkMetrica INT NOT NULL,
+    valor DOUBLE NOT NULL,
+    data_hora DATETIME NOT NULL,
+    CONSTRAINT fk_leitura_parametro FOREIGN KEY (fkMetrica) REFERENCES parametro (id)
+);
+
+CREATE TABLE categoria_alerta (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    classificacao VARCHAR(45) NOT NULL
 );
 
 CREATE TABLE alerta (
-id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-data_hora DATETIME NOT NULL,
-status_alerta VARCHAR(45) NOT NULL,
-leitura_id INT NOT NULL,
-CONSTRAINT fk_alerta_leitura1
-	FOREIGN KEY (leitura_id) REFERENCES leitura (id)
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    data_hora DATETIME NOT NULL,
+    leitura_id INT NOT NULL,
+    categoria_alerta_id INT NOT NULL,
+    CONSTRAINT fk_alerta_leitura FOREIGN KEY (leitura_id) REFERENCES leitura (id),
+    CONSTRAINT fk_alerta_categoria FOREIGN KEY (categoria_alerta_id) REFERENCES categoria_alerta (id)
 );
 
-CREATE TABLE registros (
-id_registro INT PRIMARY KEY AUTO_INCREMENT,
-id_equipamento INT NOT NULL,
-cpu_percentual DECIMAL(5,2),
-cpu_frequencia DECIMAL(10,2),
-cpu_nucleos INT,
-cpu_status VARCHAR(10),
-ram_percentual DECIMAL(5,2),
-ram_total DECIMAL(10,2),
-ram_disponivel DECIMAL(10,2),
-ram_status VARCHAR(10),
-disco_percentual DECIMAL(5,2),
-disco_total DECIMAL(10,2),
-disco_disponivel DECIMAL(10,2),
-disco_status VARCHAR(10),
-download_mb DECIMAL(12,1),
-upload_mb DECIMAL(12,1),
-status_geral VARCHAR(10),
-data_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_registros_equipamento FOREIGN KEY (id_equipamento)
-        REFERENCES equipamento(id)
-);
+-- Inserções Iniciais de Exemplo
+INSERT INTO unidade (medida) VALUES 
+('%'),
+('GB'),
+('MHz'),
+('MB'),
+('unidades');
 
--- Define o hospital
-INSERT INTO hospital (nome, cnpj, telefone, email, cep, numero)
-VALUES 
-('Hospital_MagnaSync', '00000000000000', '1100000000', 'magnasync@hospital.com', '00000000', '100');
-
--- Inserindo os componentes que serão monitorados
-INSERT INTO componente (nome) 
-VALUES 
-('CPU'),
-('RAM'),
-('Disco'),
-('Rede');
+INSERT INTO componente (tipo, biblioteca, comando, fkUnidade) VALUES 
+-- Métricas de CPU
+('CPU - Percentual', 'psutil', 'cpu_percent', 1),
+('CPU - Frequência', 'psutil', 'cpu_freq', 3),
+('CPU - Núcleos', 'psutil', 'cpu_count', 5),
+-- Métricas de Memória RAM
+('RAM - Percentual', 'psutil', 'virtual_memory.percent', 1),
+('RAM - Total', 'psutil', 'virtual_memory.total', 2),
+('RAM - Disponível', 'psutil', 'virtual_memory.available', 2),
+-- Métricas de Disco
+('Disco - Percentual', 'psutil', 'disk_usage.percent', 1),
+('Disco - Total', 'psutil', 'disk_usage.total', 2),
+('Disco - Disponível', 'psutil', 'disk_usage.free', 2),
+-- Métricas de Rede
+('Rede - Download', 'psutil', 'net_io_counters.bytes_recv', 4),
+('Rede - Upload', 'psutil', 'net_io_counters.bytes_sent', 4);
