@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS grupo10;
+CREATE DATABASE IF NOT EXISTS magnasync;
 
-USE grupo10;
+USE magnasync;
 
 CREATE TABLE hospital (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -36,6 +36,7 @@ CREATE TABLE equipamento (
     nucleos_logicos INT NOT NULL,
     frequencia_maxima FLOAT NOT NULL,
     memoria_total VARCHAR(45) NOT NULL,
+    capacidade_total VARCHAR(45) NULL,
     hospital_id INT NOT NULL,
     FOREIGN KEY (hospital_id) REFERENCES hospital(id)
 );
@@ -87,13 +88,13 @@ CREATE TABLE leitura (
     valor DOUBLE NOT NULL,
     data_hora DATETIME NOT NULL,
     FOREIGN KEY (
-        fkComponente,
+		fkMetrica,
         fkEquipamento,
-        fkMetrica
+        fkComponente
     ) REFERENCES parametro (
-        fkComponente,
+		id,
         fkEquipamento,
-        id
+        fkComponente
     )
 );
 
@@ -110,3 +111,31 @@ CREATE TABLE alerta (
     FOREIGN KEY (leitura_id) REFERENCES leitura(id),
     FOREIGN KEY (categoria_alerta_id) REFERENCES categoria_alerta(id)
 );
+
+
+-- Inserções Iniciais de Exemplo
+INSERT INTO dado (medida) VALUES 
+('%'),
+('GB'),
+('MHz'),
+('MB'),
+('unidades');
+
+INSERT INTO componente (tipo, biblioteca, comando, dado_id) VALUES 
+-- Métricas de CPU
+('CPU - Percentual', 'psutil', 'cpu_percent', 1),
+('CPU - Frequência', 'psutil', 'cpu_freq', 3),
+('CPU - Núcleos', 'psutil', 'cpu_count', 5),
+-- Métricas de Memória RAM
+('RAM - Percentual', 'psutil', 'virtual_memory.percent', 1),
+('RAM - Total', 'psutil', 'virtual_memory.total', 2),
+('RAM - Disponível', 'psutil', 'virtual_memory.available', 2),
+-- Métricas de Disco
+('Disco - Percentual', 'psutil', 'disk_usage.percent', 1),
+('Disco - Total', 'psutil', 'disk_usage.total', 2),
+('Disco - Disponível', 'psutil', 'disk_usage.free', 2),
+-- Métricas de Rede
+('Rede - Download', 'psutil', 'net_io_counters.bytes_recv', 4),
+('Rede - Upload', 'psutil', 'net_io_counters.bytes_sent', 4);
+
+-- DROP DATABASE magnasync;
