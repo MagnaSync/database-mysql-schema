@@ -12,7 +12,7 @@ CREATE TABLE hospital (
 );
 
 CREATE TABLE cargo (
-    iid INT PRIMARY KEY AUTO_INCREMENT,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     funcao VARCHAR(60) NOT NULL
 );
 
@@ -28,7 +28,7 @@ CREATE TABLE funcionario (
 );
 
 CREATE TABLE equipamento (
-    iid INT PRIMARY KEY AUTO_INCREMENT,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     fabricante VARCHAR(60) NULL,
     mac_adress CHAR(17) NOT NULL,
     nucleos_fisicos INT NOT NULL,
