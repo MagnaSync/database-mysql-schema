@@ -30,13 +30,8 @@ CREATE TABLE funcionario (
 
 CREATE TABLE equipamento (
     id INT PRIMARY KEY AUTO_INCREMENT,
-<<<<<<< HEAD
     fabricante VARCHAR(60) NULL,
     mac_adress CHAR(17) NOT NULL,
-=======
-    fabricante VARCHAR(60),
-    mac_address CHAR(17),
->>>>>>> c0bf2c179097cadd36acbb775462bcb3d583c434
     nucleos_fisicos INT NOT NULL,
     nucleos_logicos INT NOT NULL,
     frequencia_maxima FLOAT NOT NULL,
