@@ -1,4 +1,5 @@
-CREATE DATABASE magnasync;
+CREATE DATABASE IF NOT EXISTS magnasync;
+
 USE magnasync;
 
 CREATE TABLE hospital (
@@ -23,52 +24,65 @@ CREATE TABLE funcionario (
     senha VARCHAR(100) NOT NULL,
     hospital_id INT NOT NULL,
     cargo_id INT NOT NULL,
-    CONSTRAINT fk_funcionario_hospital FOREIGN KEY (hospital_id) REFERENCES hospital (id),
-    CONSTRAINT fk_funcionario_cargo FOREIGN KEY (cargo_id) REFERENCES cargo (id)
+    FOREIGN KEY (hospital_id) REFERENCES hospital(id),
+    FOREIGN KEY (cargo_id) REFERENCES cargo(id)
 );
 
 CREATE TABLE equipamento (
     id INT PRIMARY KEY AUTO_INCREMENT,
+<<<<<<< HEAD
     fabricante VARCHAR(60) NULL,
     mac_adress CHAR(17) NOT NULL,
+=======
+    fabricante VARCHAR(60),
+    mac_address CHAR(17),
+>>>>>>> c0bf2c179097cadd36acbb775462bcb3d583c434
     nucleos_fisicos INT NOT NULL,
     nucleos_logicos INT NOT NULL,
     frequencia_maxima FLOAT NOT NULL,
     memoria_total VARCHAR(45) NOT NULL,
+    capacidade_total VARCHAR(45) NULL,
     hospital_id INT NOT NULL,
-    CONSTRAINT fk_equipamento_hospital FOREIGN KEY (hospital_id) REFERENCES hospital (id)
+    FOREIGN KEY (hospital_id) REFERENCES hospital(id)
+);
+
+CREATE TABLE categoria_status (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    classificacao VARCHAR(45)
 );
 
 CREATE TABLE status_equipamento (
     id INT PRIMARY KEY AUTO_INCREMENT,
     data_hora DATETIME NOT NULL,
+    manutencao_id INT NOT NULL,
     classificacao_status_id INT NOT NULL,
     equipamento_id INT NOT NULL,
-    CONSTRAINT fk_status_equipamento FOREIGN KEY (equipamento_id) REFERENCES equipamento (id)
+    FOREIGN KEY (classificacao_status_id) REFERENCES categoria_status(id),
+    FOREIGN KEY (equipamento_id) REFERENCES equipamento(id)
 );
 
-CREATE TABLE unidade (
+CREATE TABLE dado (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    medida VARCHAR(45) NOT NULL
+    medida VARCHAR(45)
 );
 
 CREATE TABLE componente (
     id INT PRIMARY KEY AUTO_INCREMENT,
     tipo VARCHAR(45) NOT NULL,
-    biblioteca VARCHAR(45) NOT NULL,
-    comando VARCHAR(45) NOT NULL,
-    fkUnidade INT NOT NULL,
-    CONSTRAINT fk_componente_unidade FOREIGN KEY (fkUnidade) REFERENCES unidade (id)
+    biblioteca VARCHAR(45),
+    comando VARCHAR(45),
+    dado_id INT NOT NULL,
+    FOREIGN KEY (dado_id) REFERENCES dado(id)
 );
 
 CREATE TABLE parametro (
     id INT,
     fkEquipamento INT NOT NULL,
     fkComponente INT NOT NULL,
-    metrica INT NOT NULL,
+    metrica INT,
     PRIMARY KEY (id, fkEquipamento, fkComponente),
-    CONSTRAINT fk_parametro_equipamento FOREIGN KEY (fkEquipamento) REFERENCES equipamento (id),
-    CONSTRAINT fk_parametro_componente FOREIGN KEY (fkComponente) REFERENCES componente (id)
+    FOREIGN KEY (fkEquipamento) REFERENCES equipamento(id),
+    FOREIGN KEY (fkComponente) REFERENCES componente(id)
 );
 
 CREATE TABLE leitura (
@@ -78,7 +92,15 @@ CREATE TABLE leitura (
     fkMetrica INT NOT NULL,
     valor DOUBLE NOT NULL,
     data_hora DATETIME NOT NULL,
-    CONSTRAINT fk_leitura_parametro FOREIGN KEY (fkMetrica) REFERENCES parametro (id)
+    FOREIGN KEY (
+		fkMetrica,
+        fkEquipamento,
+        fkComponente
+    ) REFERENCES parametro (
+		id,
+        fkEquipamento,
+        fkComponente
+    )
 );
 
 CREATE TABLE categoria_alerta (
@@ -91,19 +113,20 @@ CREATE TABLE alerta (
     data_hora DATETIME NOT NULL,
     leitura_id INT NOT NULL,
     categoria_alerta_id INT NOT NULL,
-    CONSTRAINT fk_alerta_leitura FOREIGN KEY (leitura_id) REFERENCES leitura (id),
-    CONSTRAINT fk_alerta_categoria FOREIGN KEY (categoria_alerta_id) REFERENCES categoria_alerta (id)
+    FOREIGN KEY (leitura_id) REFERENCES leitura(id),
+    FOREIGN KEY (categoria_alerta_id) REFERENCES categoria_alerta(id)
 );
 
+
 -- Inserções Iniciais de Exemplo
-INSERT INTO unidade (medida) VALUES 
+INSERT INTO dado (medida) VALUES 
 ('%'),
 ('GB'),
 ('MHz'),
 ('MB'),
 ('unidades');
 
-INSERT INTO componente (tipo, biblioteca, comando, fkUnidade) VALUES 
+INSERT INTO componente (tipo, biblioteca, comando, dado_id) VALUES 
 -- Métricas de CPU
 ('CPU - Percentual', 'psutil', 'cpu_percent', 1),
 ('CPU - Frequência', 'psutil', 'cpu_freq', 3),
@@ -119,3 +142,5 @@ INSERT INTO componente (tipo, biblioteca, comando, fkUnidade) VALUES
 -- Métricas de Rede
 ('Rede - Download', 'psutil', 'net_io_counters.bytes_recv', 4),
 ('Rede - Upload', 'psutil', 'net_io_counters.bytes_sent', 4);
+
+-- DROP DATABASE magnasync;
