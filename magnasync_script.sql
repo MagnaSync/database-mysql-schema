@@ -138,4 +138,15 @@ INSERT INTO componente (tipo, biblioteca, comando, dado_id) VALUES
 ('Rede - Download', 'psutil', 'net_io_counters.bytes_recv', 4),
 ('Rede - Upload', 'psutil', 'net_io_counters.bytes_sent', 4);
 
+-- Teste para puxar no python
+
+INSERT INTO componente (tipo, biblioteca, comando, dado_id) VALUES
+-- Métricas de Ventoinha Teste
+('Ventoinha - Modelo', 'psutil', 'net_io_counters.bytes_recv', 5);
+
+
+-- Hospital que está a máquina
+INSERT INTO hospital (nome, cnpj, telefone, email, cep, numero)
+VALUES ('Hospital_MagnaSync', '00000000000000', '1100000000', 'magnasync@hospital.com', '00000000', '100');
+
 -- DROP DATABASE magnasync;
