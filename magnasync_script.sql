@@ -112,6 +112,22 @@ CREATE TABLE alerta (
     FOREIGN KEY (categoria_alerta_id) REFERENCES categoria_alerta(id)
 );
 
+CREATE TABLE status_chamado (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    descricao VARCHAR(20) NOT NULL 
+);
+
+CREATE TABLE chamado (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    slack_canal_id VARCHAR(50) NOT NULL,
+    slack_mensagem_ts VARCHAR(50) NOT NULL,
+    data_abertura DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    data_fim DATETIME NOT NULL,
+    fkAlerta INT NOT NULL,
+    fkStatus INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (fkAlerta) REFERENCES alerta(id),
+    FOREIGN KEY (fkStatus) REFERENCES status_chamado(id)
+);
 
 -- Inserções Iniciais de Exemplo
 INSERT INTO dado (medida) VALUES 
@@ -120,6 +136,12 @@ INSERT INTO dado (medida) VALUES
 ('MHz'),
 ('MB'),
 ('unidades');
+
+INSERT INTO status_chamado (descricao) VALUES 
+('Aberto'),
+('Em Andamento'),
+('Finalizado'),
+('Cancelado');
 
 INSERT INTO componente (tipo, biblioteca, comando, dado_id) VALUES 
 -- Métricas de CPU
