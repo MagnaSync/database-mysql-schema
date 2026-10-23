@@ -12,10 +12,16 @@ CREATE TABLE hospital (
     numero VARCHAR(10) NOT NULL
 );
 
+insert into hospital (nome, cnpj, telefone, email, cep, numero) values
+	("hp bom", '12345678901234', 123456789, 'hp@hp', 11111111, '10');
+
 CREATE TABLE cargo (
     id INT PRIMARY KEY AUTO_INCREMENT,
     funcao VARCHAR(60) NOT NULL
 );
+
+insert into cargo (funcao) value 
+	("eng clinica");
 
 CREATE TABLE funcionario (
     id INT PRIMARY KEY AUTO_INCREMENT,
