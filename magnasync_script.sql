@@ -11,18 +11,12 @@ CREATE TABLE hospital (
     cep CHAR(8) NOT NULL,
     numero VARCHAR(10) NOT NULL
 );
-
-insert into hospital (nome, cnpj, telefone, email, cep, numero) values
-	("hp bom", '12345678901234', 123456789, 'hp@hp', 11111111, '10');
-
+    
 CREATE TABLE cargo (
     id INT PRIMARY KEY AUTO_INCREMENT,
     funcao VARCHAR(60) NOT NULL
 );
-
-insert into cargo (funcao) value 
-	("eng clinica");
-
+	
 CREATE TABLE funcionario (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
@@ -38,11 +32,6 @@ CREATE TABLE equipamento (
     id INT PRIMARY KEY AUTO_INCREMENT,
     fabricante VARCHAR(60) NULL,
     mac_adress CHAR(17) NOT NULL,
-    nucleos_fisicos INT NOT NULL,
-    nucleos_logicos INT NOT NULL,
-    frequencia_maxima FLOAT NOT NULL,
-    memoria_total VARCHAR(45) NOT NULL,
-    capacidade_total VARCHAR(45) NULL,
     hospital_id INT NOT NULL,
     FOREIGN KEY (hospital_id) REFERENCES hospital(id)
 );
@@ -62,18 +51,31 @@ CREATE TABLE status_equipamento (
     FOREIGN KEY (equipamento_id) REFERENCES equipamento(id)
 );
 
-CREATE TABLE dado (
+CREATE TABLE unidade (
     id INT PRIMARY KEY AUTO_INCREMENT,
     medida VARCHAR(45)
 );
 
+CREATE TABLE tipoComponente (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    tipo VARCHAR (45)
+);
+
 CREATE TABLE componente (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    tipo VARCHAR(45) NOT NULL,
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    fkTipo INT,
+    fkUnidade INT,
+    FOREIGN KEY (fkTipo) REFERENCES tipoComponente(id),
+    FOREIGN KEY (fkUnidade) REFERENCES unidade(id)
+);
+
+CREATE TABLE comandos (
+    id INT AUTO_INCREMENT,
+    fkTipo INT NOT NULL,
     biblioteca VARCHAR(45),
     comando VARCHAR(45),
-    dado_id INT NOT NULL,
-    FOREIGN KEY (dado_id) REFERENCES dado(id)
+    PRIMARY KEY (id, fkTipo),
+    FOREIGN KEY (fkTipo) REFERENCES tipoComponente(id)
 );
 
 CREATE TABLE parametro (
@@ -85,7 +87,6 @@ CREATE TABLE parametro (
     FOREIGN KEY (fkEquipamento) REFERENCES equipamento(id),
     FOREIGN KEY (fkComponente) REFERENCES componente(id)
 );
-
 CREATE TABLE leitura (
     id INT PRIMARY KEY AUTO_INCREMENT,
     fkEquipamento INT NOT NULL,
@@ -136,7 +137,7 @@ CREATE TABLE chamado (
 );
 
 -- Inserções Iniciais de Exemplo
-INSERT INTO dado (medida) VALUES 
+INSERT INTO unidade (medida) VALUES 
 ('%'),
 ('GB'),
 ('MHz'),
@@ -149,32 +150,43 @@ INSERT INTO status_chamado (descricao) VALUES
 ('Finalizado'),
 ('Cancelado');
 
-INSERT INTO componente (tipo, biblioteca, comando, dado_id) VALUES 
--- Métricas de CPU
-('CPU - Percentual', 'psutil', 'cpu_percent', 1),
-('CPU - Frequência', 'psutil', 'cpu_freq', 3),
-('CPU - Núcleos', 'psutil', 'cpu_count', 5),
--- Métricas de Memória RAM
-('RAM - Percentual', 'psutil', 'virtual_memory.percent', 1),
-('RAM - Total', 'psutil', 'virtual_memory.total', 2),
-('RAM - Disponível', 'psutil', 'virtual_memory.available', 2),
--- Métricas de Disco
-('Disco - Percentual', 'psutil', 'disk_usage.percent', 1),
-('Disco - Total', 'psutil', 'disk_usage.total', 2),
-('Disco - Disponível', 'psutil', 'disk_usage.free', 2),
--- Métricas de Rede
-('Rede - Download', 'psutil', 'net_io_counters.bytes_recv', 4),
-('Rede - Upload', 'psutil', 'net_io_counters.bytes_sent', 4);
+
 
 -- Teste para puxar no python
 
-INSERT INTO componente (tipo, biblioteca, comando, dado_id) VALUES
--- Métricas de Ventoinha Teste
-('Ventoinha - Modelo', 'psutil', 'net_io_counters.bytes_recv', 5);
-
-
+insert into cargo (funcao) values
+ 	("Enfermeiro"), 
+	("Medico"),	
+ 	("Administração");
+    
 -- Hospital que está a máquina
 INSERT INTO hospital (nome, cnpj, telefone, email, cep, numero)
 VALUES ('Hospital_MagnaSync', '00000000000000', '1100000000', 'magnasync@hospital.com', '00000000', '100');
 
+insert into hospital (nome, cnpj, telefone, email, cep, numero) values
+	("hp", '12345678901234', 123456789, 'hp@hp', 11111111, '10');
+
+select * from funcionario;
+
+select * from leitura;
+
+select * from equipamento;
+
+select cargo.funcao from magnasync.cargo;
+
+update cargo set funcao = "Engenharia Clínica" where id = 1;
+
+SELECT 
+    f.nome AS "Nome do funcionário", 
+    h.nome AS "Nome do Hospital", 
+    c.funcao AS "Função"
+FROM 
+    funcionario AS f
+JOIN 
+    cargo AS c ON f.cargo_id = c.id
+JOIN 
+    hospital AS h ON f.hospital_id = h.id;
+
 -- DROP DATABASE magnasync;
+
+-- truncate table funcionario;
