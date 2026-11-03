@@ -12,5 +12,5 @@ INSERT INTO componente (valor, fkTipo, fkUnidade) VALUES
 (NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Upload'),   (SELECT id FROM unidade WHERE medida = 'KB/s')),
 (NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Latência'), (SELECT id FROM unidade WHERE medida = 'ms'));
 
--- sudo docker exec -i -e MYSQL_PWD='SENHA_ROOT' magnasync mysql -uroot < rede.sql
+-- sudo docker exec -it -e MYSQL_PWD='SENHA_ROOT' magnasync mysql -u root < rede.sql
 -- comando para importar o rede.sql no script de intalação
