@@ -145,12 +145,12 @@ INSERT INTO unidade (medida) VALUES ('KB/s'), ('ms');
 INSERT INTO tipoComponente (tipo) VALUES
 ('Rede - Download'),
 ('Rede - Upload'),
-('Rede - Latência');
+('Rede - Latencia');
 
 INSERT INTO componente (valor, fkTipo, fkUnidade) VALUES
 (NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Download'), (SELECT id FROM unidade WHERE medida = 'KB/s')),
 (NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Upload'),   (SELECT id FROM unidade WHERE medida = 'KB/s')),
-(NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Latência'), (SELECT id FROM unidade WHERE medida = 'ms'));
+(NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Latencia'), (SELECT id FROM unidade WHERE medida = 'ms'));
 
 INSERT INTO unidade (medida) VALUES 
 ('GB'),
