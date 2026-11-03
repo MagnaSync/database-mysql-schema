@@ -245,7 +245,3 @@ JOIN hospital h ON h.id = e.hospital_id
 JOIN componente c ON c.id = l.fkComponente
 JOIN tipoComponente t ON t.id = c.fkTipo
 ORDER BY a.data_hora DESC;
-
-
-select * from leitura;
-select * from
