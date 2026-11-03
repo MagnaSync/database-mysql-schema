@@ -184,9 +184,6 @@ insert into cargo (funcao) values
 -- Hospital que está a máquina
 INSERT INTO hospital (nome, cnpj, telefone, email, cep, numero)
 VALUES ('Hospital_MagnaSync', '00000000000000', '1100000000', 'magnasync@hospital.com', '00000000', '100');
-
-insert into hospital (nome, cnpj, telefone, email, cep, numero) values
-	("hp", '12345678901234', 123456789, 'hp@hp', 11111111, '10');
     
 INSERT INTO categoria_alerta (classificacao) VALUES ('Atenção'), ('Crítico');
   
