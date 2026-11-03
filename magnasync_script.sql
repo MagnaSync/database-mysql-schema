@@ -86,7 +86,7 @@ CREATE TABLE parametro (
     id INT,
     fkEquipamento INT NOT NULL,
     fkComponente INT NOT NULL,
-    metrica INT not null,
+    metrica INT,
     PRIMARY KEY (id, fkEquipamento, fkComponente),
     FOREIGN KEY (fkEquipamento) REFERENCES equipamento(id),
     FOREIGN KEY (fkComponente) REFERENCES componente(id)
