@@ -62,7 +62,7 @@ CREATE TABLE tipoComponente (
 
 CREATE TABLE componente (
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    valor bigint not null,
+    valor bigint,
     fkTipo INT,
     fkUnidade INT,
     FOREIGN KEY (fkTipo) REFERENCES tipoComponente(id),
@@ -139,6 +139,18 @@ CREATE TABLE chamado (
     FOREIGN KEY (fkAlerta) REFERENCES alerta(id),
     FOREIGN KEY (fkStatus) REFERENCES status_chamado(id)
 );
+
+INSERT INTO unidade (medida) VALUES ('KB/s'), ('ms');
+
+INSERT INTO tipoComponente (tipo) VALUES
+('Rede - Download'),
+('Rede - Upload'),
+('Rede - Latência');
+
+INSERT INTO componente (valor, fkTipo, fkUnidade) VALUES
+(NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Download'), (SELECT id FROM unidade WHERE medida = 'KB/s')),
+(NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Upload'),   (SELECT id FROM unidade WHERE medida = 'KB/s')),
+(NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Latência'), (SELECT id FROM unidade WHERE medida = 'ms'));
 
 INSERT INTO unidade (medida) VALUES 
 ('GB'),
