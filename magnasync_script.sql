@@ -1,5 +1,4 @@
 CREATE DATABASE IF NOT EXISTS magnasync;
-
 USE magnasync;
 
 CREATE TABLE hospital (
@@ -53,17 +52,17 @@ CREATE TABLE status_equipamento (
 
 CREATE TABLE unidade (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    medida VARCHAR(45)
+    medida VARCHAR(45) UNIQUE not null
 );
 
 CREATE TABLE tipoComponente (
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    tipo VARCHAR (45)
+    tipo VARCHAR (45) unique not null
 );
 
 CREATE TABLE componente (
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    valor bigint,
+    valor bigint not null,
     fkTipo INT,
     fkUnidade INT,
     FOREIGN KEY (fkTipo) REFERENCES tipoComponente(id),
@@ -87,7 +86,7 @@ CREATE TABLE parametro (
     id INT,
     fkEquipamento INT NOT NULL,
     fkComponente INT NOT NULL,
-    metrica INT,
+    metrica INT not null,
     PRIMARY KEY (id, fkEquipamento, fkComponente),
     FOREIGN KEY (fkEquipamento) REFERENCES equipamento(id),
     FOREIGN KEY (fkComponente) REFERENCES componente(id)
@@ -145,8 +144,8 @@ INSERT INTO unidade (medida) VALUES
 ('GB'),
 ('MB'),
 ('TB'),
-('Núcleos Físicos'),
-('Núcleos Lógicos'),
+('NucleosFisicos'),
+('NucleosLogicos'),
 ('%'),
 ('Mhz');
 
@@ -234,3 +233,7 @@ JOIN hospital h ON h.id = e.hospital_id
 JOIN componente c ON c.id = l.fkComponente
 JOIN tipoComponente t ON t.id = c.fkTipo
 ORDER BY a.data_hora DESC;
+
+
+select * from leitura;
+select * from
