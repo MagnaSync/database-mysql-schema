@@ -172,13 +172,13 @@ INSERT INTO tipoComponente (tipo) VALUES
 INSERT INTO comandos (fkTipo, biblioteca, comando, descricao, fkUnidade) VALUES
 (1, 'psutil', 'virtual_memory.percent',   'Percentual de uso', 6),
 (1, 'psutil', 'virtual_memory.total',     'Total',             1),
-(1, 'psutil', 'virtual_memory.available', 'Disponível',        1),
+(1, 'psutil', 'virtual_memory.available', 'Disponivel',        1),
 (2, 'psutil', 'disk_usage.percent',       'Percentual de uso', 6),
 (2, 'psutil', 'disk_usage.total',         'Total',             1),
-(2, 'psutil', 'disk_usage.free',          'Disponível',        1),
+(2, 'psutil', 'disk_usage.free',          'Disponivel',        1),
 (3, 'psutil', 'cpu_percent',              'Percentual de uso', 6),
-(3, 'psutil', 'cpu_freq',                 'Frequência atual',  7),
-(3, 'psutil', 'cpu_count',                'Núcleos lógicos',   5);
+(3, 'psutil', 'cpu_freq',                 'Frequencia atual',  7),
+(3, 'psutil', 'cpu_count',                'Nucleos logicos',   5);
 
 
 INSERT INTO status_chamado (descricao) VALUES 
