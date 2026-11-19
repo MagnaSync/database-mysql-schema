@@ -1,3 +1,7 @@
+/*
+comandos para mysql server
+*/
+
 CREATE DATABASE IF NOT EXISTS magnasync;
 USE magnasync;
 
@@ -139,19 +143,6 @@ CREATE TABLE chamado (
     FOREIGN KEY (fkAlerta) REFERENCES alerta(id),
     FOREIGN KEY (fkStatus) REFERENCES status_chamado(id)
 );
-
-INSERT INTO unidade (medida) VALUES ('KB/s'), ('ms');
-
-INSERT INTO tipoComponente (tipo) VALUES
-('Rede - Download'),
-('Rede - Upload'),
-('Rede - Latencia');
-
-INSERT INTO componente (valor, fkTipo, fkUnidade) VALUES
-(NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Download'), (SELECT id FROM unidade WHERE medida = 'KB/s')),
-(NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Upload'),   (SELECT id FROM unidade WHERE medida = 'KB/s')),
-(NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Latencia'), (SELECT id FROM unidade WHERE medida = 'ms'));
-
 INSERT INTO unidade (medida) VALUES 
 ('GB'),
 ('MB'),
@@ -159,12 +150,22 @@ INSERT INTO unidade (medida) VALUES
 ('NucleosFisicos'),
 ('NucleosLogicos'),
 ('%'),
-('Mhz');
+('Mhz'),
+('KB/s'), 
+('ms');
 
 INSERT INTO tipoComponente (tipo) VALUES
 ('Ram'),
 ('Disco'),
-('Processador');
+('Processador'),
+('Rede - Download'),
+('Rede - Upload'),
+('Rede - Latência');
+
+INSERT INTO componente (valor, fkTipo, fkUnidade) VALUES
+(NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Download'), (SELECT id FROM unidade WHERE medida = 'KB/s')),
+(NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Upload'),   (SELECT id FROM unidade WHERE medida = 'KB/s')),
+(NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Latência'), (SELECT id FROM unidade WHERE medida = 'ms'));
 
 
 -- Comandos de monitoramento de cada tipo (é daqui que sai o 2º menu do Python)
@@ -172,13 +173,13 @@ INSERT INTO tipoComponente (tipo) VALUES
 INSERT INTO comandos (fkTipo, biblioteca, comando, descricao, fkUnidade) VALUES
 (1, 'psutil', 'virtual_memory.percent',   'Percentual de uso', 6),
 (1, 'psutil', 'virtual_memory.total',     'Total',             1),
-(1, 'psutil', 'virtual_memory.available', 'Disponivel',        1),
+(1, 'psutil', 'virtual_memory.available', 'Disponível',        1),
 (2, 'psutil', 'disk_usage.percent',       'Percentual de uso', 6),
 (2, 'psutil', 'disk_usage.total',         'Total',             1),
-(2, 'psutil', 'disk_usage.free',          'Disponivel',        1),
+(2, 'psutil', 'disk_usage.free',          'Disponível',        1),
 (3, 'psutil', 'cpu_percent',              'Percentual de uso', 6),
-(3, 'psutil', 'cpu_freq',                 'Frequencia atual',  7),
-(3, 'psutil', 'cpu_count',                'Nucleos logicos',   5);
+(3, 'psutil', 'cpu_freq',                 'Frequência atual',  7),
+(3, 'psutil', 'cpu_count',                'Núcleos lógicos',   5);
 
 
 INSERT INTO status_chamado (descricao) VALUES 
@@ -188,15 +189,23 @@ INSERT INTO status_chamado (descricao) VALUES
 ('Cancelado');
 
 insert into cargo (funcao) values
- 	("Enfermeiro"), 
-	("Medico"),	
+ 	("Gerente"), 
+	("Analista"),	
  	("Administração");
     
 -- Hospital que está a máquina
 INSERT INTO hospital (nome, cnpj, telefone, email, cep, numero)
 VALUES ('Hospital_MagnaSync', '00000000000000', '1100000000', 'magnasync@hospital.com', '00000000', '100');
+INSERT INTO hospital (nome, cnpj, telefone, email, cep, numero)
+VALUES ('Hospital_das_Clinicas', '10000000000011', '1110000000', 'hospitaldasclinicas@hospital.com', '00000090', '101');
     
-INSERT INTO categoria_alerta (classificacao) VALUES ('Atenção'), ('Crítico');
+INSERT INTO categoria_alerta (classificacao) VALUES ('Atenção'), ('Crítico'), ('Bloqueio');
+
+insert into funcionario (nome, email, senha, hospital_id, cargo_id) values 
+("Carlos Magno", "carlosmagno@magnasync.com", "sptech", 1, 3);
+
+insert into funcionario (nome, email, senha, hospital_id, cargo_id) values 
+("Bianca Silva", "bianca@hospital.com", "sptech", 2, 1);
   
   -- Select que ve quando o alerta foi acionado
   
