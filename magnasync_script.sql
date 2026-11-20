@@ -1,3 +1,7 @@
+-- Arquivo de apoio para criar as tabelas usadas pela API do MagnaSync.
+-- Você precisa executar os comandos no banco de dados para criar as tabelas,
+-- ter este arquivo aqui não significa que a tabela em seu BD estará como abaixo!
+
 /*
 comandos para mysql server
 */
@@ -5,14 +9,23 @@ comandos para mysql server
 CREATE DATABASE IF NOT EXISTS magnasync;
 USE magnasync;
 
+
+
 CREATE TABLE hospital (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(150) NOT NULL,
     cnpj CHAR(14) NOT NULL,
     telefone VARCHAR(20) NOT NULL,
     email VARCHAR(150) NOT NULL,
-    cep CHAR(8) NOT NULL,
     numero VARCHAR(10) NOT NULL
+);
+
+CREATE TABLE endereco (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    cep CHAR(8) NOT NULL,
+    logradouro VARCHAR(150) NOT NULL,
+    numero VARCHAR(45) NOT NULL,
+    complemento VARCHAR(45) NULL
 );
     
 CREATE TABLE cargo (
@@ -23,12 +36,18 @@ CREATE TABLE cargo (
 CREATE TABLE funcionario (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    senha VARCHAR(100) NOT NULL,
     hospital_id INT NOT NULL,
     cargo_id INT NOT NULL,
     FOREIGN KEY (hospital_id) REFERENCES hospital(id),
     FOREIGN KEY (cargo_id) REFERENCES cargo(id)
+);
+
+CREATE TABLE contato (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    telefone VARCHAR(11),
+    email VARCHAR(45),
+    fkFuncionario INT NOT NULL,
+    FOREIGN KEY (fkFuncionario) REFERENCES funcionario(id)
 );
 
 CREATE TABLE equipamento (
@@ -37,21 +56,6 @@ CREATE TABLE equipamento (
     mac_adress CHAR(17) NOT NULL,
     hospital_id INT NOT NULL,
     FOREIGN KEY (hospital_id) REFERENCES hospital(id)
-);
-
-CREATE TABLE categoria_status (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    classificacao VARCHAR(45)
-);
-
-CREATE TABLE status_equipamento (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    data_hora DATETIME NOT NULL,
-    manutencao_id INT NOT NULL,
-    classificacao_status_id INT NOT NULL,
-    equipamento_id INT NOT NULL,
-    FOREIGN KEY (classificacao_status_id) REFERENCES categoria_status(id),
-    FOREIGN KEY (equipamento_id) REFERENCES equipamento(id)
 );
 
 CREATE TABLE unidade (
@@ -80,10 +84,8 @@ CREATE TABLE comandos (
     biblioteca VARCHAR(45),
     comando VARCHAR(45),
     descricao VARCHAR(60) NOT NULL,
-    fkUnidade INT NOT NULL,
     PRIMARY KEY (id, fkTipo),
-    FOREIGN KEY (fkTipo) REFERENCES tipoComponente(id),
-    FOREIGN KEY (fkUnidade) REFERENCES unidade(id)
+    FOREIGN KEY (fkTipo) REFERENCES tipoComponente(id)
 );
 
 CREATE TABLE parametro (
@@ -132,6 +134,7 @@ CREATE TABLE status_chamado (
     descricao VARCHAR(20) NOT NULL 
 );
 
+
 CREATE TABLE chamado (
     id INT PRIMARY KEY AUTO_INCREMENT,
     slack_canal_id VARCHAR(50) NOT NULL,
@@ -143,6 +146,7 @@ CREATE TABLE chamado (
     FOREIGN KEY (fkAlerta) REFERENCES alerta(id),
     FOREIGN KEY (fkStatus) REFERENCES status_chamado(id)
 );
+
 INSERT INTO unidade (medida) VALUES 
 ('GB'),
 ('MB'),
@@ -180,13 +184,6 @@ INSERT INTO comandos (fkTipo, biblioteca, comando, descricao, fkUnidade) VALUES
 (3, 'psutil', 'cpu_percent',              'Percentual de uso', 6),
 (3, 'psutil', 'cpu_freq',                 'Frequência atual',  7),
 (3, 'psutil', 'cpu_count',                'Núcleos lógicos',   5);
-
-
-INSERT INTO status_chamado (descricao) VALUES 
-('Aberto'),
-('Em Andamento'),
-('Finalizado'),
-('Cancelado');
 
 insert into cargo (funcao) values
  	("Gerente"), 
