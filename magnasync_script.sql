@@ -147,27 +147,17 @@ CREATE TABLE chamado (
 );
 
 
--- Comandos de monitoramento de cada tipo (é daqui que sai o 2º menu do Python)
--- Para criar uma nova opção de monitoramento, basta dar um INSERT aqui.
-INSERT INTO comandos (fkTipo, biblioteca, comando, descricao, fkUnidade) VALUES
-(1, 'psutil', 'virtual_memory.percent',   'Percentual de uso', 6),
-(1, 'psutil', 'virtual_memory.total',     'Total',             1),
-(1, 'psutil', 'virtual_memory.available', 'Disponível',        1),
-(2, 'psutil', 'disk_usage.percent',       'Percentual de uso', 6),
-(2, 'psutil', 'disk_usage.total',         'Total',             1),
-(2, 'psutil', 'disk_usage.free',          'Disponível',        1),
-(3, 'psutil', 'cpu_percent',              'Percentual de uso', 6),
-(3, 'psutil', 'cpu_freq',                 'Frequência atual',  7),
-(3, 'psutil', 'cpu_count',                'Núcleos lógicos',   5);
+-- ============================================================
+-- INSERTS
+-- ============================================================
 
-
-INSERT INTO status_chamado (descricao) VALUES 
+INSERT INTO status_chamado (descricao) VALUES
 ('Aberto'),
 ('Em Andamento'),
 ('Finalizado'),
 ('Cancelado');
 
-INSERT INTO unidade(medida) VALUES 
+INSERT INTO unidade (medida) VALUES
 ('GB'),
 ('MB'),
 ('TB'),
@@ -175,7 +165,7 @@ INSERT INTO unidade(medida) VALUES
 ('NucleosLogicos'),
 ('%'),
 ('Mhz'),
-('MB/s'), 
+('MB/s'),
 ('ms');
 
 INSERT INTO tipoComponente (tipo) VALUES
@@ -188,6 +178,7 @@ INSERT INTO tipoComponente (tipo) VALUES
 ('Rede - Download (%)'),
 ('Rede - Upload (%)');
 
+-- Componentes de rede (valor fica NULL; fkTipo e fkUnidade vêm das tabelas acima)
 INSERT INTO componente (fkTipo, fkUnidade) VALUES
 (
     (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Download'),
@@ -202,56 +193,85 @@ INSERT INTO componente (fkTipo, fkUnidade) VALUES
     (SELECT id FROM unidade WHERE medida = 'ms')
 ),
 (
-	(SELECT id FROM tipoComponente WHERE tipo = 'Rede - Download (%)'),
-	(SELECT id FROM unidade WHERE medida = '%')
+    (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Download (%)'),
+    (SELECT id FROM unidade WHERE medida = '%')
 ),
 (
-	(SELECT id FROM tipoComponente WHERE tipo = 'Rede - Upload (%)'),
-	(SELECT id FROM unidade WHERE medida = '%')
+    (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Upload (%)'),
+    (SELECT id FROM unidade WHERE medida = '%')
 );
-
 
 -- Comandos de monitoramento de cada tipo (é daqui que sai o 2º menu do Python)
 -- Para criar uma nova opção de monitoramento, basta dar um INSERT aqui.
-INSERT INTO comandos (fkTipo, biblioteca, comando, descricao, fkUnidade) VALUES
-(1, 'psutil', 'virtual_memory.percent',   'Percentual de uso', 6),
-(1, 'psutil', 'virtual_memory.total',     'Total',             1),
-(1, 'psutil', 'virtual_memory.available', 'Disponível',        1),
-(2, 'psutil', 'disk_usage.percent',       'Percentual de uso', 6),
-(2, 'psutil', 'disk_usage.total',         'Total',             1),
-(2, 'psutil', 'disk_usage.free',          'Disponível',        1),
-(3, 'psutil', 'cpu_percent',              'Percentual de uso', 6),
-(3, 'psutil', 'cpu_freq',                 'Frequência atual',  7),
-(3, 'psutil', 'cpu_count',                'Núcleos lógicos',   5);
+-- Colunas de comandos: fkTipo, biblioteca, comando, descricao
+INSERT INTO comandos (fkTipo, biblioteca, comando, descricao) VALUES
+(1, 'psutil', 'virtual_memory.percent', 'Percentual de uso'),
+(1, 'psutil', 'virtual_memory.total', 'Total'),
+(1, 'psutil', 'virtual_memory.available', 'Disponível'),
+(2, 'psutil', 'disk_usage.percent', 'Percentual de uso'),
+(2, 'psutil', 'disk_usage.total', 'Total'),
+(2, 'psutil', 'disk_usage.free', 'Disponível'),
+(3, 'psutil', 'cpu_percent', 'Percentual de uso'),
+(3, 'psutil', 'cpu_freq', 'Frequência atual'),
+(3, 'psutil', 'cpu_count', 'Núcleos lógicos');
+
+INSERT INTO cargo (funcao) VALUES
+('Gerente'),
+('Analista'),
+('Administração');
+
+-- Hospitais (colunas: nome, cnpj, telefone, email)
+-- CEP e número ficam na tabela endereco
+INSERT INTO hospital (nome, cnpj, telefone, email) VALUES
+('Hospital_MagnaSync', '00000000000000', '1100000000', 'magnasync@hospital.com'),
+('Hospital_das_Clinicas', '10000000000011', '1110000000', 'hospitaldasclinicas@hospital.com');
+
+-- Endereços (colunas: cep, logradouro, numero, complemento)
+-- Obs.: pela estrutura atual não existe FK entre hospital e endereco
+INSERT INTO endereco (cep, logradouro, numero, complemento) VALUES
+('00000000', 'Rua MagnaSync', '100', 'Sala 1'),
+('00000090', 'Avenida das Clínicas', '101', NULL);
+
+INSERT INTO categoria_alerta (classificacao) VALUES
+('Atenção'),
+('Crítico'),
+('Bloqueio');
+
+-- Funcionários (colunas: nome, hospital_id, cargo_id)
+-- E-mail e telefone ficam na tabela contato; não existe coluna de senha
+INSERT INTO funcionario (nome, hospital_id, cargo_id) VALUES
+(
+    'Carlos Magno',
+    (SELECT id FROM hospital WHERE nome = 'Hospital_MagnaSync'),
+    (SELECT id FROM cargo WHERE funcao = 'Administração')
+),
+(
+    'Bianca Silva',
+    (SELECT id FROM hospital WHERE nome = 'Hospital_das_Clinicas'),
+    (SELECT id FROM cargo WHERE funcao = 'Gerente')
+);
+
+-- Contatos (colunas: telefone VARCHAR(11), email, fkFuncionario)
+INSERT INTO contato (telefone, email, fkFuncionario) VALUES
+(
+    '11999990001',
+    'carlosmagno@magnasync.com',
+    (SELECT id FROM funcionario WHERE nome = 'Carlos Magno')
+),
+(
+    '11999990002',
+    'bianca@hospital.com',
+    (SELECT id FROM funcionario WHERE nome = 'Bianca Silva')
+);
+
+-- UPDATE cargo SET funcao = 'Engenharia Clínica' WHERE funcao = 'Gerente';
 
 
-INSERT INTO status_chamado (descricao) VALUES 
-('Aberto'),
-('Em Andamento'),
-('Finalizado'),
-('Cancelado');
+-- ============================================================
+-- CONSULTAS
+-- ============================================================
 
-insert into cargo (funcao) values
- 	("Gerente"), 
-	("Analista"),	
- 	("Administração");
-    
--- Hospital que está a máquina
-INSERT INTO hospital (nome, cnpj, telefone, email, cep, numero)
-VALUES ('Hospital_MagnaSync', '00000000000000', '1100000000', 'magnasync@hospital.com', '00000000', '100');
-INSERT INTO hospital (nome, cnpj, telefone, email, cep, numero)
-VALUES ('Hospital_das_Clinicas', '10000000000011', '1110000000', 'hospitaldasclinicas@hospital.com', '00000090', '101');
-    
-INSERT INTO categoria_alerta (classificacao) VALUES ('Atenção'), ('Crítico'), ('Bloqueio');
-
-insert into funcionario (nome, email, senha, hospital_id, cargo_id) values 
-("Carlos Magno", "carlosmagno@magnasync.com", "sptech", 1, 3);
-
-insert into funcionario (nome, email, senha, hospital_id, cargo_id) values 
-("Bianca Silva", "bianca@hospital.com", "sptech", 2, 1);
-  
-  -- Select que ve quando o alerta foi acionado
-  
+-- Select que vê quando o alerta foi acionado
 SELECT a.id, h.nome AS hospital, e.mac_adress, t.tipo AS componente,
        ca.classificacao, l.valor, a.data_hora
 FROM alerta a
@@ -263,44 +283,32 @@ JOIN componente c ON c.id = l.fkComponente
 JOIN tipoComponente t ON t.id = c.fkTipo
 ORDER BY a.data_hora DESC;
 
-select * from funcionario;
+SELECT
+    f.nome AS "Nome do funcionário",
+    h.nome AS "Nome do Hospital",
+    c.funcao AS "Função",
+    ct.email AS "E-mail",
+    ct.telefone AS "Telefone"
+FROM funcionario AS f
+JOIN cargo AS c ON f.cargo_id = c.id
+JOIN hospital AS h ON f.hospital_id = h.id
+LEFT JOIN contato AS ct ON ct.fkFuncionario = f.id;
 
-select * from leitura;
-
-select * from equipamento;
-
-select * from unidade;
-
-select cargo.funcao from magnasync.cargo;
-
-update cargo set funcao = "Engenharia Clínica" where id = 1;
-
-SELECT 
-    f.nome AS "Nome do funcionário", 
-    h.nome AS "Nome do Hospital", 
-    c.funcao AS "Função"
-FROM 
-    funcionario AS f
-JOIN 
-    cargo AS c ON f.cargo_id = c.id
-JOIN 
-    hospital AS h ON f.hospital_id = h.id;
-
+SELECT * FROM funcionario;
+SELECT * FROM contato;
+SELECT * FROM hospital;
+SELECT * FROM endereco;
+SELECT * FROM leitura;
+SELECT * FROM equipamento;
+SELECT * FROM unidade;
 SELECT * FROM componente;
+SELECT cargo.funcao FROM magnasync.cargo;
 
-SELECT a.id, h.nome AS hospital, e.mac_adress, t.tipo AS componente,
-       ca.classificacao, l.valor, a.data_hora
-FROM alerta a
-JOIN categoria_alerta ca ON ca.id = a.categoria_alerta_id
-JOIN leitura l ON l.id = a.leitura_id
-JOIN equipamento e ON e.id = l.fkEquipamento
-JOIN hospital h ON h.id = e.hospital_id
-JOIN componente c ON c.id = l.fkComponente
-JOIN tipoComponente t ON t.id = c.fkTipo
-ORDER BY a.data_hora DESC;
 
+-- View do histórico de leituras
+-- A tabela comandos não tem fkUnidade, então a unidade vem só de componente.fkUnidade
 CREATE OR REPLACE VIEW vw_historico_leituras AS
-SELECT 
+SELECT
     l.id AS id_leitura,
     h.nome AS hospital,
     e.id AS id_equipamento,
@@ -311,22 +319,22 @@ SELECT
     u.medida AS unidade,
     l.data_hora AS data_hora
 FROM leitura l
-JOIN parametro p 
-    ON l.fkMetrica = p.id 
-    AND l.fkEquipamento = p.fkEquipamento 
+JOIN parametro p
+    ON l.fkMetrica = p.id
+    AND l.fkEquipamento = p.fkEquipamento
     AND l.fkComponente = p.fkComponente
-JOIN equipamento e 
+JOIN equipamento e
     ON l.fkEquipamento = e.id
-JOIN hospital h 
+JOIN hospital h
     ON e.hospital_id = h.id
-JOIN componente c 
+JOIN componente c
     ON l.fkComponente = c.id
-JOIN tipoComponente tc 
+JOIN tipoComponente tc
     ON c.fkTipo = tc.id
-LEFT JOIN comandos cmd 
-    ON p.metrica = cmd.id 
+LEFT JOIN comandos cmd
+    ON p.metrica = cmd.id
     AND cmd.fkTipo = tc.id
-LEFT JOIN unidade u 
-    ON COALESCE(cmd.fkUnidade, c.fkUnidade) = u.id;
+LEFT JOIN unidade u
+    ON c.fkUnidade = u.id;
 
-select * from vw_historico_leituras;
+SELECT * FROM vw_historico_leituras;
