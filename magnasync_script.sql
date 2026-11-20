@@ -16,8 +16,7 @@ CREATE TABLE hospital (
     nome VARCHAR(150) NOT NULL,
     cnpj CHAR(14) NOT NULL,
     telefone VARCHAR(20) NOT NULL,
-    email VARCHAR(150) NOT NULL,
-    numero VARCHAR(10) NOT NULL
+    email VARCHAR(150) NOT NULL
 );
 
 CREATE TABLE endereco (
