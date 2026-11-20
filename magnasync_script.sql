@@ -147,7 +147,28 @@ CREATE TABLE chamado (
     FOREIGN KEY (fkStatus) REFERENCES status_chamado(id)
 );
 
-INSERT INTO unidade (medida) VALUES 
+
+-- Comandos de monitoramento de cada tipo (é daqui que sai o 2º menu do Python)
+-- Para criar uma nova opção de monitoramento, basta dar um INSERT aqui.
+INSERT INTO comandos (fkTipo, biblioteca, comando, descricao, fkUnidade) VALUES
+(1, 'psutil', 'virtual_memory.percent',   'Percentual de uso', 6),
+(1, 'psutil', 'virtual_memory.total',     'Total',             1),
+(1, 'psutil', 'virtual_memory.available', 'Disponível',        1),
+(2, 'psutil', 'disk_usage.percent',       'Percentual de uso', 6),
+(2, 'psutil', 'disk_usage.total',         'Total',             1),
+(2, 'psutil', 'disk_usage.free',          'Disponível',        1),
+(3, 'psutil', 'cpu_percent',              'Percentual de uso', 6),
+(3, 'psutil', 'cpu_freq',                 'Frequência atual',  7),
+(3, 'psutil', 'cpu_count',                'Núcleos lógicos',   5);
+
+
+INSERT INTO status_chamado (descricao) VALUES 
+('Aberto'),
+('Em Andamento'),
+('Finalizado'),
+('Cancelado');
+
+INSERT INTO unidade(medida) VALUES 
 ('GB'),
 ('MB'),
 ('TB'),
@@ -155,7 +176,7 @@ INSERT INTO unidade (medida) VALUES
 ('NucleosLogicos'),
 ('%'),
 ('Mhz'),
-('KB/s'), 
+('MB/s'), 
 ('ms');
 
 INSERT INTO tipoComponente (tipo) VALUES
@@ -164,12 +185,31 @@ INSERT INTO tipoComponente (tipo) VALUES
 ('Processador'),
 ('Rede - Download'),
 ('Rede - Upload'),
-('Rede - Latência');
+('Rede - Latência'),
+('Rede - Download (%)'),
+('Rede - Upload (%)');
 
-INSERT INTO componente (valor, fkTipo, fkUnidade) VALUES
-(NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Download'), (SELECT id FROM unidade WHERE medida = 'KB/s')),
-(NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Upload'),   (SELECT id FROM unidade WHERE medida = 'KB/s')),
-(NULL, (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Latência'), (SELECT id FROM unidade WHERE medida = 'ms'));
+INSERT INTO componente (fkTipo, fkUnidade) VALUES
+(
+    (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Download'),
+    (SELECT id FROM unidade WHERE medida = 'MB/s')
+),
+(
+    (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Upload'),
+    (SELECT id FROM unidade WHERE medida = 'MB/s')
+),
+(
+    (SELECT id FROM tipoComponente WHERE tipo = 'Rede - Latência'),
+    (SELECT id FROM unidade WHERE medida = 'ms')
+),
+(
+	(SELECT id FROM tipoComponente WHERE tipo = 'Rede - Download (%)'),
+	(SELECT id FROM unidade WHERE medida = '%')
+),
+(
+	(SELECT id FROM tipoComponente WHERE tipo = 'Rede - Upload (%)'),
+	(SELECT id FROM unidade WHERE medida = '%')
+);
 
 
 -- Comandos de monitoramento de cada tipo (é daqui que sai o 2º menu do Python)
@@ -230,6 +270,8 @@ select * from leitura;
 
 select * from equipamento;
 
+select * from unidade;
+
 select cargo.funcao from magnasync.cargo;
 
 update cargo set funcao = "Engenharia Clínica" where id = 1;
@@ -245,7 +287,6 @@ JOIN
 JOIN 
     hospital AS h ON f.hospital_id = h.id;
 
-
 SELECT * FROM componente;
 
 SELECT a.id, h.nome AS hospital, e.mac_adress, t.tipo AS componente,
@@ -258,3 +299,35 @@ JOIN hospital h ON h.id = e.hospital_id
 JOIN componente c ON c.id = l.fkComponente
 JOIN tipoComponente t ON t.id = c.fkTipo
 ORDER BY a.data_hora DESC;
+
+CREATE OR REPLACE VIEW vw_historico_leituras AS
+SELECT 
+    l.id AS id_leitura,
+    h.nome AS hospital,
+    e.id AS id_equipamento,
+    e.mac_adress AS mac_address,
+    tc.tipo AS componente,
+    cmd.descricao AS metrica,
+    ROUND(l.valor, 2) AS valor_captura,
+    u.medida AS unidade,
+    l.data_hora AS data_hora
+FROM leitura l
+JOIN parametro p 
+    ON l.fkMetrica = p.id 
+    AND l.fkEquipamento = p.fkEquipamento 
+    AND l.fkComponente = p.fkComponente
+JOIN equipamento e 
+    ON l.fkEquipamento = e.id
+JOIN hospital h 
+    ON e.hospital_id = h.id
+JOIN componente c 
+    ON l.fkComponente = c.id
+JOIN tipoComponente tc 
+    ON c.fkTipo = tc.id
+LEFT JOIN comandos cmd 
+    ON p.metrica = cmd.id 
+    AND cmd.fkTipo = tc.id
+LEFT JOIN unidade u 
+    ON COALESCE(cmd.fkUnidade, c.fkUnidade) = u.id;
+
+select * from vw_historico_leituras;
