@@ -35,7 +35,7 @@ CREATE TABLE cargo (
 CREATE TABLE funcionario (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
-	senha VARCHAR(145) NOT NULL,
+	senha VARCHAR(145) NOT NULL default '1234',
     hospital_id INT NOT NULL,
     cargo_id INT NOT NULL,
     FOREIGN KEY (hospital_id) REFERENCES hospital(id),
